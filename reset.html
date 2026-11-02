@@ -1,0 +1,19 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/base.css"><title>استعادة كلمة المرور</title></head><body>
+<div class="auth"><aside class="auth-brand"><div class="logo-slot" id="logo">شعار الكلية</div><div><h1>نظام إدارة طلاب كلية التربية</h1><p>كلية التربية – جامعة الأزهر بالقاهرة</p></div></aside><main class="auth-main"><section class="card">
+<h2>استعادة كلمة المرور</h2><div id="msg" class="alert" hidden role="alert"></div>
+<form id="f1" novalidate><div class="field"><label for="nid">الرقم القومي</label><input id="nid" inputmode="numeric" maxlength="14" dir="ltr"></div>
+<div class="field"><label for="ph">رقم الهاتف المسجل</label><input id="ph" inputmode="tel" maxlength="11" dir="ltr"></div>
+<button class="btn block" id="b1">طلب رمز التحقق</button></form>
+<button class="btn ghost sm" type="button" id="manual">لدي رمز استعادة من المشرف</button>
+<form id="f2" hidden novalidate><div class="field"><label for="resetId">الرقم القومي أو اسم المستخدم</label><input id="resetId" autocomplete="username"></div><div class="field"><label for="code">رمز التحقق</label><input id="code" inputmode="numeric" maxlength="6" dir="ltr"></div>
+<div class="field"><label for="np">كلمة المرور الجديدة</label><input id="np" type="password" autocomplete="new-password"></div>
+<button class="btn block" id="b2">تعيين كلمة المرور</button><button class="btn ghost sm" type="button" id="back">العودة لطلب الرمز</button></form>
+<div class="links"><a href="login.html">العودة لتسجيل الدخول</a></div></section></main></div>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/session.js"></script><script src="js/api.js"></script>
+<script>
+function show(t,ok){msg.className='alert '+(ok?'ok':'err');msg.textContent=t;msg.hidden=false}
+manual.onclick=function(){f1.hidden=true;f2.hidden=false;resetId.value='';resetId.focus()};
+back.onclick=function(){f2.hidden=true;f1.hidden=false};
+f1.onsubmit=async function(e){e.preventDefault();UI.busy(b1,true);try{var r=await api('resetRequest',{nationalId:nid.value,phone:ph.value},{noRedirect:true});show(r.message,true);resetId.value=nid.value;f1.hidden=true;f2.hidden=false}catch(x){show(x.message)}UI.busy(b1,false)};
+f2.onsubmit=async function(e){e.preventDefault();UI.busy(b2,true);try{var r=await api('resetConfirm',{nationalId:resetId.value,code:code.value,newPassword:np.value},{noRedirect:true});show(r.message,true);f2.hidden=true}catch(x){show(x.message);UI.busy(b2,false)}};
+</script></body></html>

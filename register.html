@@ -1,0 +1,39 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/base.css"><title>إنشاء حساب طالب جديد</title></head><body>
+<div class="auth"><aside class="auth-brand"><div class="logo-slot" id="logo">شعار الكلية</div><div><h1>نظام إدارة طلاب كلية التربية</h1><p>كلية التربية – جامعة الأزهر بالقاهرة</p></div></aside><main class="auth-main"><section class="card">
+<h2>إنشاء حساب طالب جديد</h2>
+<div id="msg" class="alert" hidden role="alert"></div>
+<form id="f" novalidate>
+<div class="field"><label for="fullName">الاسم الرباعي</label><input id="fullName" autocomplete="name" required><span class="err"></span></div>
+<div class="field"><label for="nationalId">الرقم القومي</label><input id="nationalId" inputmode="numeric" maxlength="14" dir="ltr" required><span class="err"></span></div>
+<div class="grid2">
+<div class="field"><label for="sectionId">الشعبة</label><select id="sectionId" required><option value="">جارٍ التحميل...</option></select><span class="err"></span></div>
+<div class="field"><label for="subjectId">المادة</label><select id="subjectId" required><option value="">جارٍ التحميل...</option></select><span class="err"></span></div>
+<div class="field"><label for="phone">رقم الهاتف</label><input id="phone" inputmode="tel" maxlength="11" dir="ltr" required><span class="err"></span></div>
+<div class="field"><label for="email">البريد الإلكتروني (اختياري)</label><input id="email" type="email" dir="ltr"><span class="err"></span></div>
+<div class="field"><label for="password">كلمة المرور</label><input id="password" type="password" autocomplete="new-password" required><small>8 أحرف على الأقل، حروف وأرقام</small><span class="err"></span></div>
+<div class="field"><label for="password2">تأكيد كلمة المرور</label><input id="password2" type="password" autocomplete="new-password" required><span class="err"></span></div>
+</div>
+<button class="btn block" id="go">إرسال طلب الحساب</button></form>
+<div class="links"><a href="login.html">لدي حساب بالفعل</a></div>
+</section></main></div>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/session.js"></script><script src="js/api.js"></script>
+<script>
+var AR='٠١٢٣٤٥٦٧٨٩';function digits(v){return v.replace(/[٠-٩]/g,function(c){return AR.indexOf(c)})}
+function opts(sel,list,ph){sel.innerHTML='<option value="">'+ph+'</option>'+list.map(function(o){return '<option value="'+UI.esc(o.id)+'">'+UI.esc(o.name)+'</option>'}).join('')}
+(async function(){try{var o=await api('publicOptions',{},{noRedirect:true});opts(sectionId,o.sections,'اختر الشعبة');opts(subjectId,o.subjects,'اختر المادة')}
+ catch(e){msg.className='alert err';msg.textContent=e.message;msg.hidden=false}})();
+function setErr(id,t){document.getElementById(id).parentNode.querySelector('.err').textContent=t||'';return !t}
+function validate(){var ok=true,v=function(id){return document.getElementById(id).value.trim()};
+ nationalId.value=digits(nationalId.value);phone.value=digits(phone.value);
+ ok&=setErr('fullName',v('fullName').split(/\s+/).length<4?'أدخل الاسم الرباعي كاملًا':'');
+ ok&=setErr('nationalId',!/^[23]\d{13}$/.test(v('nationalId'))?'الرقم القومي يجب أن يكون 14 رقمًا صحيحًا':'');
+ ok&=setErr('sectionId',!v('sectionId')?'اختر الشعبة':'');ok&=setErr('subjectId',!v('subjectId')?'اختر المادة':'');
+ ok&=setErr('phone',!/^01[0125]\d{8}$/.test(v('phone'))?'رقم هاتف مصري غير صحيح':'');
+ ok&=setErr('email',v('email')&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))?'بريد غير صحيح':'');
+ var pw=password.value;ok&=setErr('password',pw.length<8||!/[A-Za-z\u0600-\u06FF]/.test(pw)||!/\d/.test(pw)?'8 أحرف على الأقل مع حروف وأرقام':'');
+ ok&=setErr('password2',pw!==password2.value?'كلمتا المرور غير متطابقتين':'');return !!ok}
+f.onsubmit=async function(e){e.preventDefault();msg.hidden=true;if(!validate())return;UI.busy(go,true,'جارٍ الإرسال...');
+ try{var r=await api('register',{fullName:fullName.value,nationalId:nationalId.value,sectionId:sectionId.value,subjectId:subjectId.value,phone:phone.value,email:email.value,password:password.value},{noRedirect:true});
+  f.hidden=true;msg.className='alert ok';msg.textContent=r.message;msg.hidden=false;
+ }catch(err){msg.className='alert err';msg.textContent=err.message;msg.hidden=false;UI.busy(go,false)}};
+</script></body></html>

@@ -1,0 +1,23 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/base.css"><title>تسجيل الدخول</title></head><body>
+<div class="auth"><aside class="auth-brand"><div class="logo-slot" id="logo">شعار الكلية</div><div><h1>نظام إدارة طلاب كلية التربية</h1><p>كلية التربية – جامعة الأزهر بالقاهرة</p></div></aside><main class="auth-main"><section class="card">
+<h2>تسجيل الدخول</h2>
+<div id="msg" class="alert err" hidden role="alert"></div>
+<form id="f" novalidate>
+<div class="field"><label for="u">الرقم القومي أو اسم المستخدم</label><input id="u" autocomplete="username" inputmode="text" required></div>
+<div class="field"><label for="p">كلمة المرور</label><input id="p" type="password" autocomplete="current-password" required></div>
+<label class="field"><span><input id="rememberDevice" type="checkbox" checked style="width:auto;min-height:0;margin-inline-end:.4rem"> تذكرني على هذا الجهاز لمدة 30 يومًا</span></label>
+<button class="btn block" id="go">تسجيل الدخول</button></form>
+<div class="links"><a href="reset.html">نسيت كلمة المرور؟</a><a href="register.html">إنشاء حساب جديد</a></div>
+<div class="links"><button type="button" class="btn ghost sm" onclick="UI.toggleTheme()">الوضع الليلي</button></div>
+</section></main></div>
+<script src="js/config.js"></script><script src="js/ui.js"></script><script src="js/session.js"></script><script src="js/api.js"></script>
+<script>
+api('publicOptions',{},{noRedirect:true}).catch(function(){});
+var s0=Session.get(); if(s0&&s0.token) location.replace(Session.home(s0.role));
+f.onsubmit=async function(e){e.preventDefault();msg.hidden=true;
+ if(!u.value.trim()||!p.value){msg.textContent='أدخل اسم المستخدم وكلمة المرور';msg.hidden=false;return}
+ UI.busy(go,true,'جارٍ الدخول...');
+ try{var remember=rememberDevice.checked,r=await api('login',{username:u.value,password:p.value,rememberDevice:remember},{noRedirect:true});
+  Session.set({token:r.token,role:r.role,name:r.name,expires:r.expires},remember);location.replace(Session.home(r.role));
+ }catch(err){msg.textContent=err.message;msg.hidden=false;UI.busy(go,false)}};
+</script></body></html>
